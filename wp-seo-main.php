@@ -64,6 +64,7 @@ function wpseo_auto_load( $class ) {
 			'yoast_textstatistics'               => WPSEO_PATH . 'admin/TextStatistics.php',
 			'wpseo_breadcrumbs'                  => WPSEO_PATH . 'frontend/class-breadcrumbs.php',
 			'wpseo_frontend'                     => WPSEO_PATH . 'frontend/class-frontend.php',
+			'wpseo_title'                        => WPSEO_PATH . 'frontend/class-frontend.php',
 			'wpseo_opengraph'                    => WPSEO_PATH . 'frontend/class-opengraph.php',
 			'wpseo_twitter'                      => WPSEO_PATH . 'frontend/class-twitter.php',
 			'wpseo_googleplus'                   => WPSEO_PATH . 'frontend/class-googleplus.php',

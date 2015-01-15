@@ -373,6 +373,7 @@ class WPSEO_Utils {
 				return false;
 			}
 		}
+
 		return false;
 	}
 
@@ -427,6 +428,7 @@ class WPSEO_Utils {
 				return false;
 			}
 		}
+
 		return false;
 	}
 
@@ -515,8 +517,7 @@ class WPSEO_Utils {
 
 				$first = false;
 			}
-		}
-		else {
+		} else {
 			$query .= " option_name LIKE '_transient_timeout_wpseo_sitemap_%'";
 		}
 
@@ -597,8 +598,7 @@ class WPSEO_Utils {
 			case 'divide':
 				if ( $bc ) {
 					$result = bcdiv( $number1, $number2, $precision ); // string, or NULL if right_operand is 0
-				}
-				elseif ( $number2 != 0 ) {
+				} elseif ( $number2 != 0 ) {
 					$result = $number1 / $number2;
 				}
 
@@ -612,8 +612,7 @@ class WPSEO_Utils {
 			case 'modulus':
 				if ( $bc ) {
 					$result = bcmod( $number1, $number2, $precision ); // string, or NULL if modulus is 0.
-				}
-				elseif ( $number2 != 0 ) {
+				} elseif ( $number2 != 0 ) {
 					$result = $number1 % $number2;
 				}
 
@@ -682,8 +681,8 @@ class WPSEO_Utils {
 					break;
 			}
 
-			if ( isset( $type[$variable_name] ) ) {
-				$out = $type[$variable_name];
+			if ( isset( $type[ $variable_name ] ) ) {
+				$out = $type[ $variable_name ];
 			} else {
 				return false;
 			}
@@ -701,5 +700,55 @@ class WPSEO_Utils {
 			}
 		}
 	}
+
+	/**
+	 * Determine whether the current page is a static homepage.
+	 *
+	 * @param bool $force
+	 *
+	 * @return bool
+	 */
+	public static function is_home_static_page( $force = false ) {
+		static $is_home_static;
+		if ( ! isset( $is_home_static ) || $force ) {
+			$is_home_static = ( is_front_page() && 'page' == get_option( 'show_on_front' ) && is_page( get_option( 'page_on_front' ) ) );
+		}
+
+		return $is_home_static;
+	}
+
+
+	/**
+	 * Determine whether the current page is the homepage and shows posts.
+	 *
+	 * @param bool $force
+	 *
+	 * @return bool
+	 */
+	public static function is_home_posts_page( $force = false ) {
+		static $is_home_posts;
+		if ( ! isset( $is_home_posts ) || $force ) {
+			$is_home_posts = ( is_home() && 'posts' == get_option( 'show_on_front' ) );
+		}
+
+		return $is_home_posts;
+	}
+
+	/**
+	 * Determine whether this is the posts page, regardless of whether it's the frontpage or not.
+	 *
+	 * @param bool $force
+	 *
+	 * @return bool
+	 */
+	public static function is_posts_page( $force = false ) {
+		static $is_posts;
+		if ( ! isset( $is_posts ) || $force ) {
+			$is_posts = ( is_home() && 'page' == get_option( 'show_on_front' ) );
+		}
+
+		return $is_posts;
+	}
+
 
 } /* End of class WPSEO_Utils */

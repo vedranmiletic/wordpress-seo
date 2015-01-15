@@ -148,7 +148,7 @@ class WPSEO_Twitter_Test extends WPSEO_UnitTestCase {
 		$post_id = $this->factory->post->create();
 		$this->go_to( get_permalink( $post_id ) );
 
-		$expected = $this->metatag( 'title', WPSEO_Frontend::get_instance()->title( '' ) );
+		$expected = $this->metatag( 'title', WPSEO_Title::get_instance()->get( '' ) );
 		self::$class_instance->title();
 		$this->expectOutput( $expected );
 	}

@@ -215,15 +215,15 @@ class WPSEO_OpenGraph {
 		if ( is_singular() ) {
 			$title = WPSEO_Meta::get_value( 'opengraph-title' );
 			if ( $title === '' ) {
-				$title = WPSEO_Frontend::get_instance()->title( '' );
+				$title = WPSEO_Title::get_instance()->get( '' );
 			} else {
 				// Replace WP SEO Variables
 				$title = wpseo_replace_vars( $title, get_post() );
 			}
 		} else if ( is_front_page() ) {
-			$title = ( $this->options['og_frontpage_title'] !== '' ) ? $this->options['og_frontpage_title'] : WPSEO_Frontend::get_instance()->title( '' );
+			$title = ( $this->options['og_frontpage_title'] !== '' ) ? $this->options['og_frontpage_title'] : WPSEO_Title::get_instance()->get( '' );
 		} else {
-			$title = WPSEO_Frontend::get_instance()->title( '' );
+			$title = WPSEO_Title::get_instance()->get( '' );
 		}
 
 		/**
@@ -578,11 +578,7 @@ class WPSEO_OpenGraph {
 		$tags = get_the_tags();
 		if ( ! is_wp_error( $tags ) && ( is_array( $tags ) && $tags !== array() ) ) {
 
-			$tags_out = '';
-			foreach ( $tags as $tag ) {
-				$tags_out .= $tag->name . ',';
-			}
-			$tags_out = rtrim( $tags_out, ',' );
+			$tags_out = implode( ',', wp_list_pluck( $tags, 'name' ) );
 			$this->og_tag( 'article:tag', $tags_out );
 
 			return true;
