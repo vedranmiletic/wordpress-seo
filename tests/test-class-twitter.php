@@ -4,6 +4,9 @@
  * @subpackage Unittests
  */
 
+/**
+ * Class WPSEO_Twitter_Test
+ */
 class WPSEO_Twitter_Test extends WPSEO_UnitTestCase {
 
 	/**
@@ -11,6 +14,9 @@ class WPSEO_Twitter_Test extends WPSEO_UnitTestCase {
 	 */
 	private static $class_instance;
 
+	/**
+	 * Instantiate the class to be tested
+	 */
 	public static function setUpBeforeClass() {
 		ob_start();
 
@@ -22,7 +28,9 @@ class WPSEO_Twitter_Test extends WPSEO_UnitTestCase {
 		ob_end_clean();
 	}
 
-
+	/**
+	 * Clean up after test
+	 */
 	public function tearDown() {
 		ob_clean();
 		WPSEO_Frontend::get_instance()->reset();
@@ -78,8 +86,10 @@ class WPSEO_Twitter_Test extends WPSEO_UnitTestCase {
 	}
 
 	/**
-	 * @param $name
-	 * @param $value
+	 * Returns a metatag
+	 *
+	 * @param string $name
+	 * @param string $value
 	 *
 	 * @return string
 	 */
@@ -256,7 +266,9 @@ class WPSEO_Twitter_Test extends WPSEO_UnitTestCase {
 	}
 
 	/**
-	 * @param $url
+	 * Create expected image output
+	 *
+	 * @param string $url
 	 *
 	 * @return string
 	 */

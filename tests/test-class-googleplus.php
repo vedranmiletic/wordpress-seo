@@ -4,6 +4,9 @@
  * @subpackage Unittests
  */
 
+/**
+ * Class WPSEO_GooglePlus_Test
+ */
 class WPSEO_GooglePlus_Test extends WPSEO_UnitTestCase {
 
 	/**
@@ -11,6 +14,9 @@ class WPSEO_GooglePlus_Test extends WPSEO_UnitTestCase {
 	 */
 	private static $class_instance;
 
+	/**
+	 * Instantiate the class to be tested
+	 */
 	public static function setUpBeforeClass() {
 		self::$class_instance = new WPSEO_GooglePlus;
 	}

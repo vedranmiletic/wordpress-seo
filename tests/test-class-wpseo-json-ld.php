@@ -7,6 +7,9 @@ class WPSEO_JSON_LD_Test extends WPSEO_UnitTestCase {
 	 */
 	private static $class_instance;
 
+	/**
+	 * Instantiate our class
+	 */
 	public static function setUpBeforeClass() {
 		self::$class_instance = new WPSEO_JSON_LD();
 	}

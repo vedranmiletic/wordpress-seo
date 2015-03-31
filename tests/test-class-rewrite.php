@@ -4,6 +4,9 @@
  * @subpackage Unittests
  */
 
+/**
+ * Class WPSEO_Rewrite_Test
+ */
 class WPSEO_Rewrite_Test extends WPSEO_UnitTestCase {
 
 	/**
@@ -16,6 +19,9 @@ class WPSEO_Rewrite_Test extends WPSEO_UnitTestCase {
 	 */
 	private static $class_instance;
 
+	/**
+	 * Instantiate the class to be tested
+	 */
 	public static function setUpBeforeClass() {
 		self::$class_instance = new WPSEO_Rewrite;
 	}
@@ -88,8 +94,6 @@ class WPSEO_Rewrite_Test extends WPSEO_UnitTestCase {
 	public function test_category_rewrite_rules() {
 
 		$c = self::$class_instance;
-
-		$categories = get_categories( array( 'hide_empty' => false ) );
 
 		if ( false == is_multisite() ) {
 			$expected = array(

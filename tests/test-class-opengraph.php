@@ -4,6 +4,9 @@
  * @subpackage Unittests
  */
 
+/**
+ * Class WPSEO_OpenGraph_Test
+ */
 class WPSEO_OpenGraph_Test extends WPSEO_UnitTestCase {
 
 	/**
@@ -11,6 +14,9 @@ class WPSEO_OpenGraph_Test extends WPSEO_UnitTestCase {
 	 */
 	private static $class_instance;
 
+	/**
+	 * Instantiate the tests
+	 */
 	public static function setUpBeforeClass() {
 		self::$class_instance = new WPSEO_OpenGraph;
 	}
@@ -26,6 +32,9 @@ class WPSEO_OpenGraph_Test extends WPSEO_UnitTestCase {
 		$this->go_to_home();
 	}
 
+	/**
+	 * Tear down after test
+	 */
 	public function tearDown() {
 		ob_clean();
 	}
@@ -278,6 +287,9 @@ class WPSEO_OpenGraph_Test extends WPSEO_UnitTestCase {
 		$this->assertEquals( $expected_opengraph_description, $opengraph_description );
 	}
 
+	/**
+	 * @covers WPSEO_OpenGraph::description
+	 */
 	public function test_description_single_post_metadesc() {
 		$expected_meta_description = 'This is with a meta-description';
 
@@ -293,6 +305,9 @@ class WPSEO_OpenGraph_Test extends WPSEO_UnitTestCase {
 		$this->assertEquals( $expected_meta_description, $meta_description );
 	}
 
+	/**
+	 * @covers WPSEO_OpenGraph::description
+	 */
 	public function test_description_single_post_excerpt() {
 		// Creates the post
 		$post_id = $this->factory->post->create();
@@ -320,7 +335,6 @@ class WPSEO_OpenGraph_Test extends WPSEO_UnitTestCase {
 		$this->assertEquals( $expected_meta_description, $meta_description );
 
 	}
-
 
 	/**
 	 * @covers WPSEO_OpenGraph::site_name

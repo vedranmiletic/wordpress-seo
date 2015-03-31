@@ -4,6 +4,9 @@
  * @subpackage Unittests
  */
 
+/**
+ * Class WPSEO_Frontend_Test
+ */
 class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
 
 	/**
@@ -11,10 +14,16 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
 	 */
 	private static $class_instance;
 
+	/**
+	 * Instantiate class
+	 */
 	public static function setUpBeforeClass() {
 		self::$class_instance = WPSEO_Frontend::get_instance();
 	}
 
+	/**
+	 * Clean up after test
+	 */
 	public function tearDown() {
 		ob_clean();
 		self::$class_instance->reset();
@@ -300,7 +309,7 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
 		self::$class_instance->options['noindex-subpages-wpseo'] = true;
 		$this->assertEquals( $expected, self::$class_instance->robots() );
 
-		// clean-up		
+		// clean-up
 		self::$class_instance->options['noindex-subpages-wpseo'] = false;
 		set_query_var( 'paged', 0 );
 
@@ -981,18 +990,21 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
 		// from all over the place (globals, GET, etc), which makes it tricky
 		// to run them more than once without very carefully clearing everything
 		$_GET = $_POST = array();
-		foreach (array('query_string', 'id', 'postdata', 'authordata', 'day', 'currentmonth', 'page', 'pages', 'multipage', 'more', 'numpages', 'pagenow') as $v) {
-			if ( isset( $GLOBALS[$v] ) ) unset( $GLOBALS[$v] );
+		foreach ( array( 'query_string', 'id', 'postdata', 'authordata', 'day', 'currentmonth', 'page', 'pages', 'multipage', 'more', 'numpages', 'pagenow' ) as $v ) {
+			if ( isset( $GLOBALS[ $v ] ) ) {
+				unset( $GLOBALS[ $v ] );
+			}
 		}
-		$parts = parse_url($url);
-		if (isset($parts['scheme'])) {
+		$parts = parse_url( $url );
+		if ( isset( $parts['scheme'] ) ) {
 			$req = isset( $parts['path'] ) ? $parts['path'] : '';
-			if (isset($parts['query'])) {
+			if ( isset( $parts['query'] ) ) {
 				$req .= '?' . $parts['query'];
 				// parse the url query vars into $_GET
-				parse_str($parts['query'], $_GET);
+				parse_str( $parts['query'], $_GET );
 			}
-		} else {
+		}
+		else {
 			$req = $url;
 		}
 		if ( ! isset( $parts['query'] ) ) {
@@ -1009,6 +1021,6 @@ class WPSEO_Frontend_Test extends WPSEO_UnitTestCase {
 		$GLOBALS['wp'] = new WP();
 		_cleanup_query_vars();
 
-		$GLOBALS['wp']->main($parts['query']);
+		$GLOBALS['wp']->main( $parts['query'] );
 	}
 }

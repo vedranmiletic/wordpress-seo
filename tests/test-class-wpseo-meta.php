@@ -4,6 +4,9 @@
  * @subpackage Unittests
  */
 
+/**
+ * Class WPSEO_Meta_Test
+ */
 class WPSEO_Meta_Test extends WPSEO_UnitTestCase {
 
 	/**

@@ -4,6 +4,9 @@
  * @subpackage Unittests
  */
 
+/**
+ * Class WPSEO_Breadcrumbs_Test
+ */
 class WPSEO_Breadcrumbs_Test extends WPSEO_UnitTestCase {
 
 	/**
@@ -20,7 +23,6 @@ class WPSEO_Breadcrumbs_Test extends WPSEO_UnitTestCase {
 
 		// todo test actual breadcrumb output..
 	}*/
-
 
 	/**
 	 * Placeholder test to prevent PHPUnit from throwing errors
