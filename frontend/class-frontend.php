@@ -2080,14 +2080,21 @@ class WPSEO_JSON_LD {
 			return;
 		}
 
-		$image  = wp_get_attachment_image_src( get_post_thumbnail_id(), 'large' );
-		$metadesc = WPSEO_Frontend::get_instance()->metadesc( false );
-		$output = sprintf( '{"@context":"http://schema.org","@type":"NewsArticle",
-		"headline":"%1$s",
-		"image":["%2$s"],
-		"datePublished":"%3$s",
-		"description":"%4$s"}',
-		get_the_title(), $image[0], get_the_date( 'c' ), esc_attr( $metadesc ) );
+		$image = wp_get_attachment_image_src( get_post_thumbnail_id(), 'large' );
+
+		if ( ! is_array( $image ) ) {
+			return;
+		}
+
+		$desc   = WPSEO_Frontend::get_instance()->metadesc( false );
+		$output = sprintf( '{
+			"@context":"http://schema.org",
+			"@type":"NewsArticle",
+			"headline":"%1$s",
+			"image":["%2$s"],
+			"datePublished":"%3$s",
+			"description":"%4$s"
+		}', get_the_title(), $image[0], get_the_date( 'c' ), esc_attr( $desc ) );
 
 		$this->json_ld_output( $output );
 	}
