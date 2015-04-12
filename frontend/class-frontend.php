@@ -147,6 +147,8 @@ class WPSEO_Frontend {
 		if ( $this->options['title_test'] > 0 ) {
 			add_filter( 'wpseo_title', array( $this, 'title_test_helper' ) );
 		}
+
+		new WPSEO_JSON_LD;
 	}
 
 	/**
@@ -156,8 +158,6 @@ class WPSEO_Frontend {
 		if ( ! is_front_page() ) {
 			return;
 		}
-
-		new WPSEO_JSON_LD;
 
 		add_action( 'wpseo_head', array( $this, 'webmaster_tools_authentication' ), 90 );
 	}
@@ -1877,8 +1877,11 @@ class WPSEO_JSON_LD {
 		$this->options = WPSEO_Options::get_all();
 
 		add_action( 'wpseo_head', array( $this, 'json_ld' ), 90 );
-		add_action( 'wpseo_json_ld', array( $this, 'organization_or_person' ), 10 );
-		add_action( 'wpseo_json_ld', array( $this, 'internal_search' ), 20 );
+
+		if ( is_front_page() ) {
+			add_action( 'wpseo_json_ld', array( $this, 'organization_or_person' ), 10 );
+			add_action( 'wpseo_json_ld', array( $this, 'internal_search' ), 20 );
+		}
 		add_action( 'wpseo_json_ld', array( $this, 'article' ), 30 );
 	}
 
@@ -2078,12 +2081,13 @@ class WPSEO_JSON_LD {
 		}
 
 		$image  = wp_get_attachment_image_src( get_post_thumbnail_id(), 'large' );
-		$output = sprintf( '{ "@context": "http://schema.org",
-			"@type": "NewsArticle",
-			"headline": "%1$s",
-			"image": ["%2$s"],
-			"datePublished": "%s$3",
-		}', get_the_title(), $image['url'], get_the_date( 'c' ) );
+		$metadesc = WPSEO_Frontend::get_instance()->metadesc( false );
+		$output = sprintf( '{"@context":"http://schema.org","@type":"NewsArticle",
+		"headline":"%1$s",
+		"image":["%2$s"],
+		"datePublished":"%3$s",
+		"description":"%4$s"}',
+		get_the_title(), $image[0], get_the_date( 'c' ), esc_attr( $metadesc ) );
 
 		$this->json_ld_output( $output );
 	}
