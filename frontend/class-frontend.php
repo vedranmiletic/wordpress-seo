@@ -1080,10 +1080,10 @@ class WPSEO_Frontend {
 				}
 
 				if ( $page > 1 ) {
-					$this->adjacent_rel_link( 'prev', $url, ($page - 1), $usebase, 'single_paged' );
+					$this->adjacent_rel_link( 'prev', $url, ( $page - 1 ), $usebase, 'single_paged' );
 				}
 				if ( $page < $numpages ) {
-					$this->adjacent_rel_link( 'next', $url, ($page + 1), $usebase, 'single_paged' );
+					$this->adjacent_rel_link( 'next', $url, ( $page + 1 ), $usebase, 'single_paged' );
 				}
 			}
 		}
@@ -1879,6 +1879,7 @@ class WPSEO_JSON_LD {
 		add_action( 'wpseo_head', array( $this, 'json_ld' ), 90 );
 		add_action( 'wpseo_json_ld', array( $this, 'organization_or_person' ), 10 );
 		add_action( 'wpseo_json_ld', array( $this, 'internal_search' ), 20 );
+		add_action( 'wpseo_json_ld', array( $this, 'article' ), 30 );
 	}
 
 	/**
@@ -2050,4 +2051,40 @@ class WPSEO_JSON_LD {
 		$this->json_ld_output( $output );
 	}
 
+	/**
+	 * Adds Article schema
+	 *
+	 * @since 2.1
+	 *
+	 * @link  https://developers.google.com/structured-data/rich-snippets/articles
+	 */
+	public function article() {
+		$do_article_json = false;
+		if ( is_single() ) {
+			$do_article_json = true;
+		}
+
+		/**
+		 * Filter: 'wpseo_json_ld_article_posttype' - Allows enabling article schema for other post types
+		 *
+		 * @api string $output The output of the function.
+		 *
+		 * @param string $post_type The current page's post type
+		 */
+		$do_article_json = apply_filters( 'wpseo_json_ld_article_posttype', $do_article_json, get_post_type() );
+
+		if ( ! $do_article_json ) {
+			return;
+		}
+
+		$image  = wp_get_attachment_image_src( get_post_thumbnail_id(), 'large' );
+		$output = sprintf( '{ "@context": "http://schema.org",
+			"@type": "NewsArticle",
+			"headline": "%1$s",
+			"image": ["%2$s"],
+			"datePublished": "%s$3",
+		}', get_the_title(), $image['url'], get_the_date( 'c' ) );
+
+		$this->json_ld_output( $output );
+	}
 }
