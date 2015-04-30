@@ -18,6 +18,10 @@ if ( ! function_exists( 'initialize_wpseo_front' ) ) {
 	}
 }
 
+/**
+ * Clears the sitemap cache when the rewrites are flushed
+ */
+add_action( 'delete_option_rewrite_rules', array( 'WPSEO_Utils', 'clear_sitemap_cache' ) );
 
 if ( ! function_exists( 'yoast_breadcrumb' ) ) {
 	/**
@@ -322,7 +326,6 @@ function wpseo_shortcode_yoast_breadcrumb() {
 }
 
 add_shortcode( 'wpseo_breadcrumb', 'wpseo_shortcode_yoast_breadcrumb' );
-
 
 /**
  * This invalidates our XML Sitemaps cache.
