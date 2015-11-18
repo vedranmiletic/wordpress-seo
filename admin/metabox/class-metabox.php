@@ -219,7 +219,8 @@ class WPSEO_Metabox extends WPSEO_Meta {
 			'home_url'          => home_url( '/', null ),
 			'title_template'    => WPSEO_Metabox::get_title_template( $post ),
 			'metadesc_template' => WPSEO_Metabox::get_metadesc_template( $post ),
-			'contentTab'    => __( 'Content:' , 'wordpress-seo' ),
+			'contentTab'        => __( 'Content:' , 'wordpress-seo' ),
+			'post_date'         => $post -> post_date,
 		);
 	}
 
