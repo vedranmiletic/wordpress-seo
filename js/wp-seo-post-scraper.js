@@ -91,9 +91,7 @@
 			snippetCite: this.getDataFromInput( 'cite' ),
 			usedKeywords: wpseoPostScraperL10n.keyword_usage,
 			searchUrl: '<a target="_blank" href=' + wpseoPostScraperL10n.search_url + '>',
-			postUrl: '<a target="_blank" href=' + wpseoPostScraperL10n.post_edit_url + '>',
-			post_date: wpseoPostScraperL10n.post_date,
-			show_date: wpseoPostScraperL10n.show_date
+			postUrl: '<a target="_blank" href=' + wpseoPostScraperL10n.post_edit_url + '>'
 		};
 	};
 
@@ -498,6 +496,8 @@
 			usedKeywords: wpseoPostScraperL10n.keyword_usage,
 			searchUrl: '<a target="_blank" href=' + wpseoPostScraperL10n.search_url + '>',
 			postUrl: '<a target="_blank" href=' + wpseoPostScraperL10n.post_edit_url + '>',
+			show_date: wpseoPostScraperL10n.show_date,
+			post_date: wpseoPostScraperL10n.post_date,
 			callbacks: {
 				getData: postScraper.getData.bind( postScraper ),
 				bindElementEvents: postScraper.bindElementEvents.bind( postScraper ),
