@@ -211,6 +211,10 @@ class WPSEO_Metabox extends WPSEO_Meta {
 
 		$translations = $this->get_scraper_translations();
 
+		$post_type = $post->post_type;
+
+		$show_date = $this->options[ 'showdate-' . $post_type ];
+
 		return array(
 			'translations'      => $translations,
 			'keyword_usage'     => $this->get_focus_keyword_usage(),
@@ -220,7 +224,8 @@ class WPSEO_Metabox extends WPSEO_Meta {
 			'title_template'    => WPSEO_Metabox::get_title_template( $post ),
 			'metadesc_template' => WPSEO_Metabox::get_metadesc_template( $post ),
 			'contentTab'        => __( 'Content:' , 'wordpress-seo' ),
-			'post_date'         => $post -> post_date,
+			'post_date'         => WPSEO_Metabox::get_post_date( $post ),
+			'show_date'         => $show_date,
 		);
 	}
 
