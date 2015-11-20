@@ -93,7 +93,7 @@
 			searchUrl: '<a target="_blank" href=' + wpseoPostScraperL10n.search_url + '>',
 			postUrl: '<a target="_blank" href=' + wpseoPostScraperL10n.post_edit_url + '>',
 			post_date: wpseoPostScraperL10n.post_date,
-			show_date: true
+			show_date: wpseoPostScraperL10n.show_date
 		};
 	};
 
