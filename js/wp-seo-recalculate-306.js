@@ -135,6 +135,8 @@
 	YoastRecalculateScore.prototype.parseResponse = function( response ) {
 		if ( response !== '' && response !== null ) {
 			if ( response.total_items !== undefined ) {
+				jQuery( '#wpseo_count_total' ).html( response.total_items );
+
 				var scores = this.calculateScores( response.total_items, response.items );
 
 				this.sendScores(scores);
