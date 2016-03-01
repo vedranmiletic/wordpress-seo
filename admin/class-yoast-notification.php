@@ -150,20 +150,56 @@ class Yoast_Notification {
 			return WPSEO_Utils::grant_access();
 		}
 
-		if ( ! empty( $this->options['capabilities'] ) ) {
+		/**
+		 * Filter capabilities that enable the displaying of this notification.
+		 *
+		 * @since 3.2
+		 *
+		 * @param array              $capabilities The capabilities that must be present for this Notification.
+		 * @param string             $id           The ID of the notification.
+		 * @param Yoast_Notification $notification The notification object.
+		 *
+		 * @return array of capabilities or empty for no restrictions.
+		 */
+		$capabilities = apply_filters( 'wpseo_notification_capabilities', $this->options['capabilities'], $this->options['id'], $this );
 
-			// Type of check: all or one is enough.
-			$any_or_all = $this->options['capability_check'];
+		/**
+		 * Filter capability check to enable 'all' or 'any' capabilities.
+		 *
+		 * @since 3.2
+		 *
+		 * @param string             $capability_check The type of check that will be used to determine if an capability is present.
+		 * @param string             $id               The ID of the notification.
+		 * @param Yoast_Notification $notification     The notification object.
+		 *
+		 * @return string 'all' or 'any'.
+		 */
+		$capability_check = apply_filters( 'wpseo_notification_capability_check', $this->options['capability_check'], $this->options['id'], $this );
 
-			foreach ( $this->options['capabilities'] as $capability ) {
+		if ( is_string( $capability_check ) ) {
+			$capability_check = array( $capability_check );
+		}
+
+		// Should be an array.
+		if ( ! is_array( $capability_check ) ) {
+			$capability_check = array();
+		}
+
+		if ( ! in_array( $capability_check, array( 'all', 'any' ), true ) ) {
+			$capability_check = 'all';
+		}
+
+		if ( ! empty( $capabilities ) ) {
+
+			foreach ( $capabilities as $capability ) {
 				$user_can = current_user_can( $capability );
-				if ( 'all' === $any_or_all ) {
+				if ( 'all' === $capability_check ) {
 					if ( ! $user_can ) {
 						return false;
 					}
 				}
 
-				if ( 'any' === $any_or_all ) {
+				if ( 'any' === $capability_check ) {
 					if ( $user_can ) {
 						return true;
 					}
@@ -235,43 +271,6 @@ class Yoast_Notification {
 	 * Make sure we only have values that we can work with
 	 */
 	private function verify_options() {
-		/**
-		 * Filter capabilities that enable the displaying of this notification.
-		 *
-		 * @since 3.2
-		 *
-		 * @param array              $capabilities The capabilities that must be present for this Notification.
-		 * @param string             $id           The ID of the notification.
-		 * @param Yoast_Notification $notification The notification object.
-		 *
-		 * @return array of capabilities or empty for no restrictions.
-		 */
-		$this->options['capabilities'] = apply_filters( 'wpseo_notification_capabilities', $this->options['capabilities'], $this->options['id'], $this );
-		if ( is_string( $this->options['capabilities'] ) ) {
-			$this->options['capabilities'] = array( $this->options['capabilities'] );
-		}
-
-		// Should be an array.
-		if ( ! is_array( $this->options['capabilities'] ) ) {
-			$this->options['capabilities'] = array();
-		}
-
-		/**
-		 * Filter capability check to enable 'all' or 'any' capabilities.
-		 *
-		 * @since 3.2
-		 *
-		 * @param string             $capability_check The type of check that will be used to determine if an capability is present.
-		 * @param string             $id               The ID of the notification.
-		 * @param Yoast_Notification $notification     The notification object.
-		 *
-		 * @return string 'all' or 'any'.
-		 */
-		$this->options['capability_check'] = apply_filters( 'wpseo_notification_capability_check', $this->options['capability_check'], $this->options['id'], $this );
-		if ( ! in_array( $this->options['capability_check'], array( 'all', 'any' ) ) ) {
-			$this->options['capability_check'] = 'all';
-		}
-
 		// Should not exceed 0 or 1.
 		$this->options['priority'] = min( 1, max( 0, $this->options['priority'] ) );
 	}
