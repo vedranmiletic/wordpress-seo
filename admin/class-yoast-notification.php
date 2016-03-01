@@ -163,6 +163,15 @@ class Yoast_Notification {
 		 */
 		$capabilities = apply_filters( 'wpseo_notification_capabilities', $this->options['capabilities'], $this->options['id'], $this );
 
+		if ( is_string( $capabilities ) && ! empty( $capabilities ) ) {
+			$capabilities = array( $capabilities );
+		}
+
+		// Should be an array.
+		if ( ! is_array( $capabilities ) ) {
+			$capabilities = array();
+		}
+
 		/**
 		 * Filter capability check to enable 'all' or 'any' capabilities.
 		 *
@@ -175,15 +184,6 @@ class Yoast_Notification {
 		 * @return string 'all' or 'any'.
 		 */
 		$capability_check = apply_filters( 'wpseo_notification_capability_check', $this->options['capability_check'], $this->options['id'], $this );
-
-		if ( is_string( $capability_check ) ) {
-			$capability_check = array( $capability_check );
-		}
-
-		// Should be an array.
-		if ( ! is_array( $capability_check ) ) {
-			$capability_check = array();
-		}
 
 		if ( ! in_array( $capability_check, array( 'all', 'any' ), true ) ) {
 			$capability_check = 'all';
@@ -204,6 +204,14 @@ class Yoast_Notification {
 						return true;
 					}
 				}
+			}
+
+			if ( 'all' === $capability_check ) {
+				return true;
+			}
+
+			if ( 'any' === $capability_check ) {
+				return false;
 			}
 		}
 

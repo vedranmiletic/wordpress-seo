@@ -1,4 +1,7 @@
 <?php
+/**
+ * @package Yoast\Tests\Notifications
+ */
 
 /**
  * Class Test_Yoast_Notification_Center
