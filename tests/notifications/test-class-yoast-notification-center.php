@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class Test_Yoast_Notification_Center
+ */
 class Test_Yoast_Notification_Center extends WPSEO_UnitTestCase {
 	/**
 	 * Tests:
@@ -21,6 +24,9 @@ class Test_Yoast_Notification_Center extends WPSEO_UnitTestCase {
 	 * Notifier notification is added
 	 */
 
+	/**
+	 * Test instance.
+	 */
 	public function test_construct() {
 		$subject = Yoast_Notification_Center::get();
 

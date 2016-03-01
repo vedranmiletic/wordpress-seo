@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class Test_Yoast_Notification
+ */
 class Test_Yoast_Notification extends WPSEO_UnitTestCase {
 	/**
 	 * Tests:
@@ -14,6 +17,9 @@ class Test_Yoast_Notification extends WPSEO_UnitTestCase {
 	 *  get_priority
 	 */
 
+	/**
+	 * No ID is not persistent.
+	 */
 	public function test_not_persistent() {
 		$subject = new Yoast_Notification( 'message', array() );
 		$this->assertFalse( $subject->is_persistent() );
