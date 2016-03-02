@@ -84,7 +84,7 @@ class WPSEO_OnPage {
 	 * Show a notice when the website is not indexable
 	 */
 	public function register_notifier() {
-		Yoast_Notification_Center::get()->register_notifier( new Yoast_Not_Indexable_Homepage_Notifier( $this ) );
+		Yoast_Notification_Center::get()->add_notifier( new Yoast_Not_Indexable_Homepage_Notifier( $this ) );
 	}
 
 	/**

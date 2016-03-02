@@ -28,11 +28,136 @@ class Test_Yoast_Notification_Center extends WPSEO_UnitTestCase {
 	 */
 
 	/**
+	 * Remove notifications on tearDown
+	 */
+	public function tearDown() {
+		parent::tearDown();
+
+		$notification_center = Yoast_Notification_Center::get();
+		$notification_center->deactivate_hook();
+	}
+
+	/**
 	 * Test instance.
 	 */
 	public function test_construct() {
 		$subject = Yoast_Notification_Center::get();
 
 		$this->assertTrue( $subject instanceof Yoast_Notification_Center );
+	}
+
+	/**
+	 * Registering a notifier
+	 */
+	public function test_register_notifier() {
+
+		$notification = $this->getMockBuilder( Yoast_Notification::class )
+		                     ->setConstructorArgs( array( 'notification', array() ) )
+		                     ->getMock();
+
+		$notifier = $this->getMockBuilder( Yoast_Notifier_Interface::class )->getMock();
+		$notifier->method( 'apply' )->will( $this->returnValue( true ) );
+		$notifier->method( 'get_notification' )->will( $this->returnValue( $notification ) );
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notifier( $notifier );
+
+		$this->assertEquals( array( $notifier ), $subject->get_notifiers() );
+	}
+
+	/**
+	 * Registering a notifier
+	 */
+	public function test_register_notifier_twice() {
+
+		$notification = $this->getMockBuilder( Yoast_Notification::class )
+		                     ->setConstructorArgs( array( 'notification', array() ) )
+		                     ->getMock();
+
+		$notifier = $this->getMockBuilder( Yoast_Notifier_Interface::class )->getMock();
+		$notifier->method( 'apply' )->will( $this->returnValue( true ) );
+		$notifier->method( 'get_notification' )->will( $this->returnValue( $notification ) );
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notifier( $notifier );
+		$subject->add_notifier( $notifier );
+
+		$this->assertEquals( array( $notifier ), $subject->get_notifiers() );
+	}
+
+	/**
+	 * Add notification
+	 */
+	public function test_add_notification() {
+		$notification = $this->getMockBuilder( Yoast_Notification::class )
+		                     ->setConstructorArgs( array( 'notification', array() ) )
+		                     ->getMock();
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notification( $notification );
+
+		$this->assertEquals( array( $notification ), $subject->get_notifications() );
+
+
+	}
+
+	/**
+	 * Add wrong notification
+	 */
+	public function test_add_notification_twice() {
+		$notification = $this->getMockBuilder( Yoast_Notification::class )
+		                     ->setConstructorArgs( array( 'notification', array() ) )
+		                     ->getMock();
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notification( $notification );
+		$subject->add_notification( $notification );
+
+		$notifications = $subject->get_notifications();
+
+		$this->assertEquals( 2, count( $notifications ) );
+	}
+
+	/**
+	 * Add persistent notification twice
+	 *
+	 * Only one should be in the list.
+	 */
+	public function test_add_notification_twice_persistent() {
+		$notification = $this->getMockBuilder( Yoast_Notification::class )
+		                     ->setConstructorArgs( array( 'notification', array( 'id' => 'id' ) ) )
+		                     ->getMock();
+
+		$notification->method( 'get_id' )->will( $this->returnValue( 'id' ) );
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notification( $notification );
+		$subject->add_notification( $notification );
+
+		$notifications = $subject->get_notifications();
+
+		$this->assertEquals( 1, count( $notifications ) );
+	}
+
+	/**
+	 * Test for not set dismissal key.
+	 */
+	public function test_is_notification_dismissed_non_existent_key() {
+		$subject = Yoast_Notification_Center::get();
+		$this->assertFalse( $subject->is_notification_dismissed( '' ) );
+		$this->assertFalse( $subject->is_notification_dismissed( 'invalid' ) );
+	}
+
+	/**
+	 * Test dismissed notification
+	 */
+	public function test_is_notification_dismissed() {
+		$notification_dismissal_key = 'notification_dismissal';
+
+		$user_id = $this->factory->user->create();
+		update_user_meta( $user_id, $notification_dismissal_key, '1' );
+
+		$subject = Yoast_Notification_Center::get();
+		$this->assertTrue( $subject->is_notification_dismissed( $notification_dismissal_key, $user_id ) );
 	}
 }

@@ -110,7 +110,7 @@ class Test_Yoast_Notification extends WPSEO_UnitTestCase {
 	/**
 	 * Test retrieval of dismissal key when not set
 	 */
-	public function get_dismissal_key_not_set() {
+	public function test_get_dismissal_key_not_set() {
 		$subject = new Yoast_Notification( 'message', array( 'id' => 'id' ) );
 		$this->assertEquals( 'id', $subject->get_dismissal_key() );
 	}

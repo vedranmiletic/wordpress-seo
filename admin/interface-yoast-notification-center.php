@@ -35,5 +35,5 @@ interface Yoast_Notification_Center_Interface {
 	 *
 	 * @param Yoast_Notifier_Interface $notifier Notifier to add to the stack.
 	 */
-	public function register_notifier( Yoast_Notifier_Interface $notifier );
+	public function add_notifier( Yoast_Notifier_Interface $notifier );
 }

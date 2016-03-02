@@ -64,23 +64,32 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 	public static function initialise_notifiers() {
 		$instance = self::get();
 
-		$instance->register_notifier( new Yoast_Search_Engine_Visibility_Notifier() );
-		$instance->register_notifier( new Yoast_Default_Tagline_Notifier() );
-		$instance->register_notifier( new Yoast_Algorithm_Update_Notifier() );
+		$instance->add_notifier( new Yoast_Search_Engine_Visibility_Notifier() );
+		$instance->add_notifier( new Yoast_Default_Tagline_Notifier() );
+		$instance->add_notifier( new Yoast_Algorithm_Update_Notifier() );
 
-		$instance->register_notifier( new Yoast_API_Libs_Required_Version_Notifier() );
-		$instance->register_notifier( new Yoast_GA_Incompatible_Version_Notifier() );
-		$instance->register_notifier( new Yoast_GA_Compatibility_Notifier() );
+		$instance->add_notifier( new Yoast_API_Libs_Required_Version_Notifier() );
+		$instance->add_notifier( new Yoast_GA_Incompatible_Version_Notifier() );
+		$instance->add_notifier( new Yoast_GA_Compatibility_Notifier() );
 
-		$instance->register_notifier( new Yoast_Google_Search_Console_Configuration_Notifier() );
+		$instance->add_notifier( new Yoast_Google_Search_Console_Configuration_Notifier() );
 
-		$instance->register_notifier( new Yoast_After_Update_Notifier() );
+		$instance->add_notifier( new Yoast_After_Update_Notifier() );
 
 		/**
 		 * Context dependent notifications:
 		 * - Yoast_Not_Indexable_Homepage_Notifier - WPSEO_OnPage, needs option information.
 		 * - Yoast_Plugin_Conflict_Notifier - Yoast_Plugin_Conflict, needs plugin+conflict information.
 		 */
+
+		/**
+		 * Action Register Notifiers
+		 *
+		 * Allow to hook into the notification center notifier registration.
+		 *
+		 * @param $instance Yoast_Notification_Center Instance to register notifier on.
+		 */
+		do_action( 'yoast_register_notifiers', $instance );
 	}
 
 	/**
@@ -225,6 +234,16 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 	 * @param Yoast_Notification $notification Notification object instance.
 	 */
 	public function add_notification( Yoast_Notification $notification ) {
+		// Don't add persistent notifications that have already been added.
+		$notification_id = $notification->get_id();
+		if ( ! empty( $notification_id ) ) {
+			$found = $this->get_notification_by_id( $notification->get_id() );
+			if ( ! is_null( $found ) ) {
+				return;
+			}
+		}
+
+		// Add to list.
 		$this->notifications[] = $notification;
 	}
 
@@ -319,20 +338,6 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 	}
 
 	/**
-	 * Register a notifier and apply notification
-	 *
-	 * @param Yoast_Notifier_Interface $notifier Notifier to add to the stack.
-	 */
-	public function register_notifier( Yoast_Notifier_Interface $notifier ) {
-		// Prevent duplicates.
-		if ( $this->has_notifier( $notifier ) ) {
-			return;
-		}
-
-		$this->add_notifier( $notifier );
-	}
-
-	/**
 	 * Remove transient when the plugin is deactivated
 	 */
 	public function deactivate_hook() {
@@ -342,16 +347,21 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 	/**
 	 * Write the notifications to a cookie (hooked on shutdown)
 	 *
+	 * Function renamed to 'update_storage'.
+	 *
 	 * @depreacted 3.2 remove in 3.5
 	 */
 	public function set_transient() {
 	}
 
 	/**
+	 * Save persistent notifications to storage
 	 *
-	 *
+	 * We need to be able to retrieve these so they can be dismissed at any time during the execution.
 	 *
 	 * @since 3.2
+	 *
+	 * @return void
 	 */
 	public function update_storage() {
 		// Create array with all notifications.
@@ -377,6 +387,24 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 			WPSEO_Utils::json_encode( $notifications ),
 			false
 		);
+	}
+
+	/**
+	 * Provide a way to verify registered notifiers
+	 *
+	 * @return array|Yoast_Notifier_Interface[] Registered notifiers.
+	 */
+	public function get_notifiers() {
+		return $this->notifiers;
+	}
+
+	/**
+	 * Provide a way to verify present notifications
+	 *
+	 * @return array|Yoast_Notification[] Registered notifications.
+	 */
+	public function get_notifications() {
+		return $this->notifications;
 	}
 
 	/**
@@ -438,7 +466,12 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 	 *
 	 * @param Yoast_Notifier_Interface $notifier Notifier to add to the stack.
 	 */
-	private function add_notifier( Yoast_Notifier_Interface $notifier ) {
+	public function add_notifier( Yoast_Notifier_Interface $notifier ) {
+		// Prevent duplicates.
+		if ( $this->has_notifier( $notifier ) ) {
+			return;
+		}
+
 		$this->notifiers[] = $notifier;
 	}
 
@@ -491,15 +524,16 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 
 			// Get json notifications from transient.
 			$stored_notifications = json_decode( $stored_notifications, true );
+			if ( ! is_array( $stored_notifications ) || empty( $stored_notifications ) ) {
+				return $notifications;
+			}
 
 			// Create Yoast_Notification objects.
-			if ( count( $stored_notifications ) > 0 ) {
-				foreach ( $stored_notifications as $notification_data ) {
-					$notifications[] = new Yoast_Notification(
-						$notification_data['message'],
-						$notification_data['options']
-					);
-				}
+			foreach ( $stored_notifications as $notification_data ) {
+				$notifications[] = new Yoast_Notification(
+					$notification_data['message'],
+					$notification_data['options']
+				);
 			}
 		}
 
