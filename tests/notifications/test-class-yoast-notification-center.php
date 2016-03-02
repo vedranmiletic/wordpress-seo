@@ -268,6 +268,7 @@ class Test_Yoast_Notification_Center extends WPSEO_UnitTestCase {
 		$stored_notifications = get_option( Yoast_Notification_Center::STORAGE_KEY );
 		$test                 = WPSEO_Utils::json_encode( array( $notification->to_array() ) );
 
+		$this->assertInternalType( 'string', $stored_notifications );
 		$this->assertEquals( $test, $stored_notifications );
 	}
 
@@ -300,5 +301,183 @@ class Test_Yoast_Notification_Center extends WPSEO_UnitTestCase {
 		$stored_notifications = get_option( Yoast_Notification_Center::STORAGE_KEY );
 
 		$this->assertFalse( $stored_notifications );
+	}
+
+	/**
+	 * Sort one notification
+	 */
+	public function test_get_sorted_notifications() {
+		$message = 'c';
+		$options = array();
+
+		$notification = $this->getMockBuilder( Yoast_Notification::class )
+		                     ->setConstructorArgs( array( $message, $options ) )
+		                     ->getMock();
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notification( $notification );
+
+		$sorted = $subject->get_sorted_notifications();
+
+		$this->assertInternalType( 'array', $sorted );
+		$this->assertEquals( array( $notification ), $sorted );
+	}
+
+	/**
+	 * No notification to sort, still an array
+	 */
+	public function test_get_sorted_notifications_empty() {
+		$subject = Yoast_Notification_Center::get();
+
+		$sorted = $subject->get_sorted_notifications();
+
+		$this->assertInternalType( 'array', $sorted );
+		$this->assertEquals( array(), $sorted );
+	}
+
+	/**
+	 * Sort by type
+	 */
+	public function test_get_sorted_notifications_by_type() {
+		$message_1 = '1';
+		$options_1 = array( 'type' => 'update' );
+
+		$message_2 = '2';
+		$options_2 = array( 'type' => 'error' );
+
+		$notification_1 = $this->getMockBuilder( Yoast_Notification::class )
+		                       ->setConstructorArgs( array( $message_1, $options_1 ) )
+		                       ->getMock();
+
+		$notification_2 = $this->getMockBuilder( Yoast_Notification::class )
+		                       ->setConstructorArgs( array( $message_2, $options_2 ) )
+		                       ->getMock();
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notification( $notification_1 );
+		$subject->add_notification( $notification_2 );
+
+		$sorted = $subject->get_sorted_notifications();
+
+		$this->assertEquals( array( $notification_2, $notification_1 ), $sorted );
+	}
+
+	/**
+	 * Sort by priority
+	 */
+	public function test_get_sorted_notifications_by_priority() {
+		$message_1 = '1';
+		$options_1 = array( 'type' => 'error', 'priority' => 0.5 );
+
+		$message_2 = '2';
+		$options_2 = array( 'type' => 'error', 'priority' => 1 );
+
+		$notification_1 = $this->getMockBuilder( Yoast_Notification::class )
+		                       ->setConstructorArgs( array( $message_1, $options_1 ) )
+		                       ->getMock();
+
+		$notification_2 = $this->getMockBuilder( Yoast_Notification::class )
+		                       ->setConstructorArgs( array( $message_2, $options_2 ) )
+		                       ->getMock();
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notification( $notification_1 );
+		$subject->add_notification( $notification_2 );
+
+		$sorted = $subject->get_sorted_notifications();
+
+		$this->assertEquals( array( $notification_2, $notification_1 ), $sorted );
+	}
+
+	/**
+	 * Display notification
+	 */
+	public function test_display_notifications() {
+		$message = 'c';
+		$options = array();
+
+		$notification = $this->getMockBuilder( Yoast_Notification::class )
+		                     ->setConstructorArgs( array( $message, $options ) )
+		                     ->getMock();
+
+		$notification->method( 'display_for_current_user' )->will( $this->returnValue( true ) );
+		$notification->method( '__toString' )->will( $this->returnValue( 'a' ) );
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notification( $notification );
+		$subject->display_notifications();
+
+		$this->expectOutput( 'a' );
+	}
+
+	/**
+	 * Display notification not for current user
+	 */
+	public function test_display_notifications_not_for_current_user() {
+		$message = 'c';
+		$options = array();
+
+		$notification = $this->getMockBuilder( Yoast_Notification::class )
+		                     ->setConstructorArgs( array( $message, $options ) )
+		                     ->getMock();
+
+		$notification->method( 'display_for_current_user' )->will( $this->returnValue( false ) );
+		$notification->method( '__toString' )->will( $this->returnValue( 'a' ) );
+
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notification( $notification );
+		$subject->display_notifications();
+
+		$this->expectOutput( '' );
+	}
+
+	/**
+	 * Test dismissed notification displaying
+	 */
+	public function test_display_dismissed_notification() {
+		$notification_dismissal_key = 'dismissed';
+
+		$message = 'c';
+		$options = array( 'dismissal_key' => $notification_dismissal_key );
+
+		$notification = $this->getMockBuilder( Yoast_Notification::class )
+		                     ->setConstructorArgs( array( $message, $options ) )
+		                     ->getMock();
+
+		// Dismiss the key for the current user.
+		$user_id = $this->factory->user->create();
+		wp_set_current_user( $user_id );
+		update_user_meta( $user_id, $notification_dismissal_key, '1' );
+
+		// Add the notification.
+		$subject = Yoast_Notification_Center::get();
+		$subject->add_notification( $notification );
+		$subject->display_notifications();
+
+		// It should not be displayed.
+		$this->expectOutput( '' );
+	}
+
+	/**
+	 * Maybe dismissing
+	 */
+	public function test_maybe_dismiss_notification() {
+		$this->assertFalse( Yoast_Notification_Center::maybe_dismiss_notification( false ) );
+		$this->assertFalse( Yoast_Notification_Center::maybe_dismiss_notification( new StdClass() ) );
+		$this->assertFalse( Yoast_Notification_Center::maybe_dismiss_notification( '' ) );
+		$this->assertFalse( Yoast_Notification_Center::maybe_dismiss_notification( 'maybe' ) );
+	}
+
+	/**
+	 * Test dismissed notification maybe dismiss
+	 */
+	public function test_maybe_dismiss_notification_dismissed() {
+		$notification_dismissal_key = 'notification_dismissal';
+
+		$user_id = $this->factory->user->create();
+		wp_set_current_user( $user_id );
+		update_user_meta( $user_id, $notification_dismissal_key, '1' );
+
+		$this->assertTrue( Yoast_Notification_Center::maybe_dismiss_notification( $notification_dismissal_key ) );
 	}
 }

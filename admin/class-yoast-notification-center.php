@@ -274,22 +274,32 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 			return;
 		}
 
-		$this->notifications = array_unique( $this->notifications );
-
-		// Display notifications.
-		if ( count( $this->notifications ) > 0 ) {
-			// Sort by severity, error first.
-			usort( $this->notifications, array( $this, 'sort_notifications' ) );
-
-			foreach ( $this->notifications as $notification ) {
-				if ( $this->show_notification( $notification ) ) {
-					echo $notification;
-				}
+		$sorted_notifications = $this->get_sorted_notifications();
+		foreach ( $sorted_notifications as $notification ) {
+			if ( $this->show_notification( $notification ) ) {
+				echo $notification;
 			}
 		}
 
 		// Clear the local stored notifications.
 		$this->clear_notifications();
+	}
+
+	/**
+	 * Return the notifications sorted on type and priority
+	 *
+	 * @return array|Yoast_Notification[] Sorted Notifications
+	 */
+	public function get_sorted_notifications() {
+		$notifications = $this->notifications;
+		if ( empty( $notifications ) ) {
+			return array();
+		}
+
+		// Sort by severity, error first.
+		usort( $notifications, array( $this, 'sort_notifications' ) );
+
+		return $notifications;
 	}
 
 	/**
@@ -395,7 +405,7 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 	 *
 	 * @return array|Yoast_Notifier_Interface[] Registered notifiers.
 	 */
-	public function get_notifiers() {
+	public 	function get_notifiers() {
 		return $this->notifiers;
 	}
 
@@ -524,7 +534,7 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 		if ( false !== $stored_notifications ) {
 
 			// Get json notifications from transient.
-			$stored_notifications = WPSEO_Utils::json_encode( $stored_notifications, true );
+			$stored_notifications = json_decode( $stored_notifications, true );
 			if ( ! is_array( $stored_notifications ) || empty( $stored_notifications ) ) {
 				return $notifications;
 			}
