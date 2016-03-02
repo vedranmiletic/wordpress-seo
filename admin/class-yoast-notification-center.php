@@ -218,7 +218,7 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 			$dismissal_key = $notification;
 		}
 
-		if ( ! isset( $dismissal_key ) ) {
+		if ( empty( $dismissal_key ) ) {
 			return false;
 		}
 
@@ -341,6 +341,7 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 	 * Remove transient when the plugin is deactivated
 	 */
 	public function deactivate_hook() {
+		$this->clear_notifiers();
 		$this->clear_notifications();
 	}
 
@@ -523,7 +524,7 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 		if ( false !== $stored_notifications ) {
 
 			// Get json notifications from transient.
-			$stored_notifications = json_decode( $stored_notifications, true );
+			$stored_notifications = WPSEO_Utils::json_encode( $stored_notifications, true );
 			if ( ! is_array( $stored_notifications ) || empty( $stored_notifications ) ) {
 				return $notifications;
 			}
@@ -552,5 +553,12 @@ class Yoast_Notification_Center implements Yoast_Notification_Center_Interface {
 	 */
 	private function clear_notifications() {
 		$this->notifications = array();
+	}
+
+	/**
+	 * Clear notifiers (mostly for testing)
+	 */
+	private function clear_notifiers() {
+		$this->notifiers = array();
 	}
 }
