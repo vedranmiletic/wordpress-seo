@@ -208,7 +208,7 @@ class WPSEO_Sitemaps_Cache {
 
 		// Combine seconds and milliseconds and convert to integer.
 		$max_int = (string) PHP_INT_MAX;
-		$number  = substr( $seconds . '' . $milliseconds, 0, ( strlen( $max_int ) - 1 ) );
+		$number  = substr( $seconds . '' . $milliseconds, ( 0 - ( strlen( $max_int ) - 1 ) ) );
 
 		$validator = intval( $number, 10 );
 
