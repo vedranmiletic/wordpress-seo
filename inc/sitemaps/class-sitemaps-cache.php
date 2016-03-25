@@ -207,7 +207,10 @@ class WPSEO_Sitemaps_Cache {
 		$milliseconds = substr( $milliseconds, 2, 5 );
 
 		// Combine seconds and milliseconds and convert to integer.
-		$validator = intval( $seconds . '' . $milliseconds, 10 );
+		$max_int = (string) PHP_INT_MAX;
+		$number  = substr( $seconds . '' . $milliseconds, 0, ( strlen( $max_int ) - 1 ) );
+
+		$validator = intval( $number, 10 );
 
 		// Apply base 61 encoding.
 		$compressed = self::convert_base10_to_base61( $validator );
