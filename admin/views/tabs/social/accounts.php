@@ -11,6 +11,7 @@ if ( ! defined( 'WPSEO_VERSION' ) ) {
 
 echo '<p>';
 _e( 'To inform Google about your social profiles, we need to know their URLs.', 'wordpress-seo' );
+echo ' ';
 _e( 'For each, pick the main account associated with this site and please enter them below:', 'wordpress-seo' );
 echo '</p>';
 
